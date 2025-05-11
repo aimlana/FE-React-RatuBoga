@@ -35,7 +35,7 @@ export const useMenuData = () => {
       setMenus(res.data.data);
       setPagination(prev => ({
         ...prev,
-        total: res.data.total
+        total: res.data.pagination.total
       }));
     } catch (err) {
       console.error('Failed to fetch menus:', err);
@@ -51,7 +51,11 @@ export const useMenuData = () => {
 
   const createMenu = async (menuData) => {
     try {
-      const res = await api.post('/create', menuData); 
+      const res = await api.post('/create', menuData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }); 
       setMenus((prev) => [...prev, res.data.newMenu]);
       return res.data;
     } catch (err) {
@@ -62,7 +66,11 @@ export const useMenuData = () => {
 
   const updateMenu = async (id, menuData) => {
     try {
-      const res = await api.put(`/${id}`, menuData);
+      const res = await api.put(`/${id}`, menuData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      });
       setMenus((prev) =>
         prev.map((menu) => (menu.id === id ? res.data.menu : menu))
       );
