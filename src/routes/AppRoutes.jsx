@@ -1,10 +1,15 @@
 import { Routes, Route } from 'react-router-dom';
+
+// Public
 import Home from '../pages/Home';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Dashboard from '../pages/Dashboard';
 import ForgotPassword from '../pages/ForgotPassword';
 import ResetPassword from '../pages/ResetPassword';
+import Menu from '../pages/Menu';
+
+// Admin
 import AdminDashboard from '../pages/Admin/Dashboard';
 import AdminMenu from '../pages/Admin/Menu';
 import AdminLayout from '../layouts/AdminLayout'; 
@@ -17,6 +22,7 @@ const AppRoutes = () => {
     <Routes>
       {/* Public routes */}
       <Route path='/' element={<Home />} />
+      <Route path='/menu' element={<Menu />} />
       <Route path='/login' element={<Login />} />
       <Route path='/register' element={<Register />} />
       <Route path='/dashboard' element={<Dashboard />} />
