@@ -3,11 +3,16 @@ import { useMenuData } from '../../hooks/useMenuData';
 import { toast } from 'react-toastify';
 import MenuModal from '../../components/MenuModal';
 
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 function Menu() {
   useEffect(() => {
     document.title = 'Ratu Boga | Menu Management';
   }, []);
-  
+
+  const BASE_URL = 'http://localhost:5001';
+
   const {
     menus,
     pagination,
@@ -31,7 +36,7 @@ function Menu() {
       description: '',
       price: '',
       quantity: '',
-      image: '',
+      imageUrl: '',
     });
     setModalOpen(true);
   };
@@ -48,16 +53,11 @@ function Menu() {
 
   const handleSubmit = async (formData) => {
     try {
-      const payload = {
-        ...formData,
-        price: Number(formData.price),
-        quantity: Number(formData.quantity),
-      };
-
       if (isEdit) {
-        await updateMenu(currentMenu.id, payload);
+        await updateMenu(currentMenu.id, formData);
+        await refreshMenus();
       } else {
-        await createMenu(payload);
+        await createMenu(formData);
         await refreshMenus();
       }
       setModalOpen(false);
@@ -70,9 +70,9 @@ function Menu() {
     if (window.confirm('Are you sure you want to delete this menu?')) {
       try {
         await deleteMenu(id);
-        toast.success('Menu berhasil dihapusz')
+        toast.success('Menu berhasil dihapus');
       } catch (error) {
-        console.error(error)
+        console.error(error);
         toast.error(error.response?.data?.message || 'Gagal menghapus menu');
       }
     }
@@ -87,9 +87,9 @@ function Menu() {
         <h2 className='text-xl font-semibold'>Menu List</h2>
         <button
           onClick={handleOpenCreate}
-          className='bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded'
+          className='bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded cursor-pointer'
         >
-          Add New Menu
+          Tambah Menu
         </button>
       </div>
 
@@ -113,26 +113,26 @@ function Menu() {
                 <td className='py-3 px-4'>Rp {menu.price}</td>
                 <td className='py-3 px-4'>{menu.quantity}</td>
                 <td className='py-3 px-4'>
-                  {menu.image && (
+                  {menu.imageUrl && (
                     <img
-                      src={menu.image}
+                      src={`${BASE_URL}${menu.imageUrl}`}
                       alt={menu.name}
-                      className='h-12 object-cover'
+                      className='h-10 w-16 object-cover'
                     />
                   )}
                 </td>
                 <td className='py-3 px-4 space-x-2'>
                   <button
                     onClick={() => handleOpenEdit(menu)}
-                    className='bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded'
+                    className='bg-yellow-400 hover:bg-yellow-600 text-white px-3 py-1 rounded cursor-pointer'
                   >
-                    Edit
+                    <FontAwesomeIcon icon={faEdit} />
                   </button>
                   <button
                     onClick={() => handleDelete(menu.id)}
-                    className='bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded'
+                    className='bg-red-500 hover:bg-red-700 text-white px-3 py-1 rounded cursor-pointer'
                   >
-                    Delete
+                    <FontAwesomeIcon icon={faTrash} />
                   </button>
                 </td>
               </tr>
@@ -147,7 +147,7 @@ function Menu() {
           disabled={pagination.page === 1}
           className='p-2 disabled:opacity-50'
         >
-          { '<' }
+          {'<'}
         </button>
 
         <span className='mx-4'>
@@ -160,7 +160,7 @@ function Menu() {
           disabled={pagination.page * pagination.limit >= pagination.total}
           className='p-2 disabled:opacity-50'
         >
-          { '>' }
+          {'>'}
         </button>
       </div>
 
@@ -174,6 +174,6 @@ function Menu() {
       )}
     </div>
   );
-};
+}
 
 export default Menu;
