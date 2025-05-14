@@ -1,4 +1,4 @@
-import API from "./api";
+import API from './api';
 
 const loginUser = async (formData) => {
   try {
@@ -20,7 +20,7 @@ const registerUser = async (formData) => {
 };
 
 const logoutUser = () => {
-  localStorage.removeItem('token'); 
+  localStorage.removeItem('token');
 };
 
 export { loginUser, registerUser, logoutUser };
