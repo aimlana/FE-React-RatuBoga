@@ -20,6 +20,7 @@ function Menu() {
   const [error, setError] = useState(null);
   const [showCart, setShowCart] = useState(false);
   const [cart, setCart] = useState([]);
+  // const [notes, setNotes] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('Semua');
 
@@ -101,19 +102,6 @@ function Menu() {
         <div className='container mx-auto flex justify-between items-center'>
           <h1 className='text-xl font-bold'>Ratu Boga</h1>
           <div className='flex items-center space-x-4'>
-            <div className='relative'>
-              <input
-                type='text'
-                placeholder='Cari menu...'
-                className='pl-10 pr-4 py-2 border rounded-lg'
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              <FontAwesomeIcon
-                icon={faSearch}
-                className='absolute left-3 top-3 text-gray-400'
-              />
-            </div>
             <button
               className='relative p-2'
               onClick={() => setShowCart(!showCart)}
@@ -138,7 +126,22 @@ function Menu() {
           }`}
         >
           <div className='container mx-auto'>
-            <h2 className='text-2xl font-bold mb-6'>Daftar Menu</h2>
+            <div className='flex justify-between items-center'>
+              <h2 className='text-2xl font-bold mb-6'>Daftar Menu</h2>
+              <div className='relative'>
+                <input
+                  type='text'
+                  placeholder='Cari menu...'
+                  className='pl-10 pr-4 py-2 border rounded-lg'
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <FontAwesomeIcon
+                  icon={faSearch}
+                  className='absolute left-3 top-3 text-gray-400'
+                />
+              </div>
+            </div>
 
             {/* Categories */}
             <div className='flex space-x-2 mb-6 overflow-x-auto pb-2'>
