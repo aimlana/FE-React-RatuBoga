@@ -22,7 +22,7 @@ function Menu() {
   const [cart, setCart] = useState([]);
   // const [notes, setNotes] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeCategory, setActiveCategory] = useState('Semua');
+  const [activeCategory, setActiveCategory] = useState(null);
 
   useEffect(() => {
     document.title = 'Ratu Boga | Menu';
@@ -80,16 +80,21 @@ function Menu() {
   const filteredAvailableMenus = availableMenus.filter(
     (menu) =>
       menu.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (activeCategory === 'Semua' || menu.category === activeCategory)
+      (activeCategory === null || menu.categoryId === activeCategory)
   );
 
   const filteredOutOfStockMenus = outOfStockMenus.filter(
     (menu) =>
       menu.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (activeCategory === 'Semua' || menu.category === activeCategory)
+      (activeCategory === null || menu.categoryId === activeCategory)
   );
+  
 
-  const categories = ['Semua', 'Makanan', 'Minuman'];
+  const categories = [
+    { label: 'Semua', id: null },
+    { label: 'Makanan', id: 1 },
+    { label: 'Minuman', id: 2 },
+  ];
 
   if (loading) return <div className='text-center py-8'>Memuat menu...</div>;
   if (error)
@@ -147,15 +152,15 @@ function Menu() {
             <div className='flex space-x-2 mb-6 overflow-x-auto pb-2'>
               {categories.map((category) => (
                 <button
-                  key={category}
+                  key={category.label}
                   className={`px-4 py-2 rounded-full whitespace-nowrap ${
-                    activeCategory === category
+                    activeCategory === category.id
                       ? 'bg-blue-500 text-white'
                       : 'bg-gray-200 text-gray-700'
                   }`}
-                  onClick={() => setActiveCategory(category)}
+                  onClick={() => setActiveCategory(category.id)}
                 >
-                  {category}
+                  {category.label}
                 </button>
               ))}
             </div>
@@ -168,9 +173,17 @@ function Menu() {
                   : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
               }`}
             >
-              {filteredAvailableMenus.map((menu) => (
-                <MenuCard key={menu.id} menu={menu} onAddToCart={addToCart} />
-              ))}
+              {filteredAvailableMenus.length > 0 ? (
+                filteredAvailableMenus.map((menu) => (
+                  <MenuCard key={menu.id} menu={menu} onAddToCart={addToCart} />
+                ))
+              ) : (
+                <div className='text-center text-gray-500 col-span-full'>
+                  {activeCategory === 1 && 'Makanan tidak ada.'}
+                  {activeCategory === 2 && 'Minuman tidak ada.'}
+                  {activeCategory === null && 'Menu tidak ditemukan.'}
+                </div>
+              )}
             </div>
 
             {filteredOutOfStockMenus.length > 0 && (
