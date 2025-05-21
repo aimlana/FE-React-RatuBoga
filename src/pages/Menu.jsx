@@ -1,18 +1,23 @@
 // pages/Customer/Menu.jsx
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { logoutUser } from '../api/authApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faSearch,
-  faShoppingCart,
   faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import MenuCard from '../components/MenuCard';
+import Navbar from '../components/Navbar';
 
 const API_BASE_URL = 'http://localhost:5001/api/menu';
 
 function Menu() {
+  const navigate = useNavigate();
+
+  const [user, setUser] = useState(null);
   const [menus, setMenus] = useState([]);
   const [outOfStockMenus, setOutOfStockMenus] = useState([]);
   const [availableMenus, setAvailableMenus] = useState([]);
@@ -28,6 +33,13 @@ function Menu() {
     document.title = 'Ratu Boga | Menu';
     fetchMenus();
   }, []);
+
+  useEffect(() => {
+    const token =  localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+    }
+  })
 
   useEffect(() => {
     if (menus.length > 0) {
@@ -49,6 +61,12 @@ function Menu() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogout = () => {
+    logoutUser();
+    setUser(null);
+    navigate('/login');
   };
 
   const addToCart = (menu) => {
@@ -102,25 +120,12 @@ function Menu() {
 
   return (
     <div className='flex flex-col h-screen bg-gray-50'>
-      {/* Header */}
-      <header className='bg-white shadow-sm p-4'>
-        <div className='container mx-auto flex justify-between items-center'>
-          <h1 className='text-xl font-bold'>Ratu Boga</h1>
-          <div className='flex items-center space-x-4'>
-            <button
-              className='relative p-2'
-              onClick={() => setShowCart(!showCart)}
-            >
-              <FontAwesomeIcon icon={faShoppingCart} size='lg' />
-              {cart.length > 0 && (
-                <span className='absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center'>
-                  {cart.reduce((total, item) => total + item.quantity, 0)}
-                </span>
-              )}
-            </button>
-          </div>
-        </div>
-      </header>
+      <Navbar
+        cartCount={cart.reduce((total, item) => total + item.quantity, 0)}
+        onCartClick={() => setShowCart(!showCart)}
+        user={user}
+        onLogout={handleLogout}
+      />
 
       {/* Main Content */}
       <div className='flex flex-1 overflow-hidden'>
