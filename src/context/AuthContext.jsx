@@ -1,75 +1,55 @@
-import { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 
-// 1. Buat Context
-// eslint-disable-next-line react-refresh/only-export-components
-export const AuthContext = createContext();
+const AuthContext = createContext();
 
-// 2. Buat Provider
 export const AuthProvider = ({ children }) => {
+  const [token, setToken] = useState(localStorage.getItem('token') || null);
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
-  // Cek status login saat pertama load
   useEffect(() => {
-    const checkAuth = async () => {
+    if (token) {
       try {
-        const token = localStorage.getItem('token');
-        if (token) {
-          const res = await axios.get('http://localhost:5001/api/auth/me', {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          setUser(res.data.user);
+        const decoded = jwtDecode(token);
+        const isExpired = decoded.exp * 1000 < Date.now();
+        if (isExpired) {
+          logout(); 
+        } else {
+          setUser(decoded);
+          setIsAuthenticated(true);
         }
+      // eslint-disable-next-line no-unused-vars
       } catch (err) {
-        console.error(err.message);
-        localStorage.removeItem('token');
-      } finally {
-        setLoading(false);
+        logout(); 
       }
-    };
-
-    checkAuth();
-  }, []);
-
-  // Fungsi Login
-  const login = async (email, password) => {
-    try {
-      const res = await axios.post('http://localhost:5001/api/auth/login', {
-        email,
-        password,
-      });
-
-      localStorage.setItem('token', res.data.token);
-      setUser(res.data.user);
-      toast.success('Login berhasil');
-      navigate('/');
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Login gagal');
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+
+  const login = (token) => {
+    localStorage.setItem('token', token);
+    setToken(token);
   };
 
-  // Fungsi Logout
   const logout = () => {
     localStorage.removeItem('token');
+    setToken(null);
     setUser(null);
-    toast.success('Logout berhasil');
-    navigate('/login');
+    setIsAuthenticated(false);
+    navigate('/');
   };
 
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        login,
-        logout,
-      }}
+      value={{ token, user, isAuthenticated, login, logout }}
     >
       {children}
     </AuthContext.Provider>
   );
 };
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const useAuth = () => useContext(AuthContext);
