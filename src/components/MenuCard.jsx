@@ -1,6 +1,4 @@
-// components/MenuCard.jsx
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { Plus } from 'lucide-react';
 
 const MenuCard = ({ menu, onAddToCart }) => {
   return (
@@ -31,10 +29,10 @@ const MenuCard = ({ menu, onAddToCart }) => {
             Rp {menu.price.toLocaleString('id-ID')}
           </span>
           <button
-            className='bg-blue-500 hover:bg-blue-600 text-white w-8 h-8 rounded-full'
+            className='bg-chineseOraange text-white p-2 rounded-full'
             onClick={() => onAddToCart(menu)}
           >
-            <FontAwesomeIcon icon={faPlus} size='sm' className='text-center' />
+            <Plus size={20} />
           </button>
         </div>
       </div>
